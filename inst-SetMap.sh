@@ -55,7 +55,7 @@ cat SetMap.t \
     | sed -e 's:^M?\(.*\)$:IFMAP(<!dnl\n  \1\n!>)dnl:' \
           -e 's:^S?\(.*\)$:IFSET(<!dnl\n  \1\n!>)dnl:' \
     | m4 -DKIND=$KIND \
-    	 -DVARTYPE=$KEYTYPE -DXVARTYPE=$XKEYTYPE \
+    	 -DKEYTYPE=$KEYTYPE -DXKEYTYPE=$XKEYTYPE \
     	 -DVALTYPE=$VALTYPE -DXVALTYPE=$XVALTYPE \
     > $FILENAME
 
