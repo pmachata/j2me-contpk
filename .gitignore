@@ -1,0 +1,8 @@
+*.jar
+*.jad
+*.class
+*.MANIFEST
+*~
+.emacs.desktop
+preverified-classes
+classes
