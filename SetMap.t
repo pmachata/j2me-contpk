@@ -1,9 +1,30 @@
 // -*-java-*-
 changequote(<!,!>)dnl
+dnl
+dnl // IFMAP/IFSET: true if that type of class is being defined
 ifelse(KIND, <!Map!>, <!define(<!IFMAP!>,<!$1!>)!>, <!define(<!IFMAP!>,<!!>)!>)dnl
 ifelse(KIND, <!Set!>, <!define(<!IFSET!>,<!$1!>)!>, <!define(<!IFSET!>,<!!>)!>)dnl
+dnl
+dnl // THISCLASS: name of the class that's being defined
 define(<!THISCLASS!>, <!KIND<!!>XKEYTYPE<!!>IFMAP(<!XVALTYPE!>)!>)dnl
+dnl
+dnl // SETCLASS: name of the complementary Set class, e.g. SetInteger
+dnl // for MapInteger*.  Same as THISCLASS for Sets.
 define(<!SETCLASS!>, <!Set<!!>XKEYTYPE!>)dnl
+dnl
+dnl // IFBASIC: true when VALTYPE is intrinsic type or Object;  true also for Sets
+ifelse(KIND, <!Map!>,
+       <!ifelse(VALTYPE, <!Object!>,
+		<!define(<!IFBASIC!>, <!$1!>)!>,
+		VALTYPE, XVALTYPE,
+		<!define(<!IFBASIC!>, <!!>)!>,
+		<!define(<!IFBASIC!>, <!$1!>)!>)!>,
+       <!define(<!IFBASIC!>, <!$1!>)!>)dnl
+dnl
+dnl // IFNBASIC: true when IFBASIC is false and the other way around
+ifelse(IFBASIC(<!X!>), <!X!>,
+       <!define(<!IFNBASIC!>, <!!>)!>,
+       <!define(<!IFNBASIC!>, <!$1!>)!>)dnl
 import java.util.Enumeration;
 
 public class THISCLASS {
@@ -330,6 +351,7 @@ IFMAP(<!dnl
 	    System.out.println("#" + i + " = " + sets[i]);
     }
 
+IFBASIC(<!dnl
     private static int failures = 0;
     private static int totalTests = 0;
     private static void check(boolean condition, String message) {
@@ -458,4 +480,10 @@ M?	    check(vs.getValue(key) == values[i], "key " + key + " still has the right
 	    throw new RuntimeException("Failures!");
 	}
     }
+!>)dnl
+IFNBASIC(<!
+    public static void main(String[] vals) {
+	System.out.println("(no tests available)");
+    }
+!>)dnl
 }
