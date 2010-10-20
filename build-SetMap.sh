@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. build-SetMap.conf
+. ./build-SetMap.conf
 
 echo "instantiating Set and Map classes..."
 echo "" > build-SetMap.tmps
