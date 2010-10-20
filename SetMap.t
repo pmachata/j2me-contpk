@@ -325,9 +325,21 @@ IFMAP(<!dnl
 	if (this == other)
 	    return true;
 	else
-	    return containsAll(other)
+	    return count == other.count
+		&& containsAll(other)
 		&& other.containsAll(this)IFMAP(<!
 		&& valuesSame(other)!>);
+    }
+
+    public int hashCode() {
+	int hash = 0;
+	for (int i = 0; i < count; ++i) {
+	    int ix = index[i];
+	    if (ix == -1)
+		continue;
+	    hash ^= (new XKEYTYPE (keys[ix])).hashCode ();
+	}
+	return hash;
     }
 
     public String toString() {
@@ -401,6 +413,7 @@ M?	    check(vs.getValue(key) == values[i], "key " + key + " still has the right
 	}
 
 	check (vs.equals(vs2) && vs2.equals(vs), "sets are equal 1");
+	check (vs.hashCode() == vs2.hashCode(), "hashes match 1");
 
 	THISCLASS vs3 = new THISCLASS<!!>();
 	THISCLASS vs4 = new THISCLASS<!!>();
@@ -409,7 +422,13 @@ M?	    check(vs.getValue(key) == values[i], "key " + key + " still has the right
 	    vs3.add(keys[i]IFMAP(<!, values[i]!>));
 
 	check(vs.equals(vs3) && vs3.equals(vs), "sets are equal 2");
-	check(vs4.equals(vs5) && vs5.equals(vs4), "sets not equal 3");
+	check(vs.hashCode() == vs3.hashCode(), "hashes match 2");
+	check(vs4.equals(vs5) && vs5.equals(vs4), "sets are equal 3");
+	check(vs4.hashCode() == vs5.hashCode(), "hashes match 3");
+	check(!vs3.equals(vs5) && !vs5.equals(vs3), "sets not equal 3");
+	// This test is dubious, but there should be no collisions on
+	// sets built in such an obvious way.
+	check(vs3.hashCode() != vs5.hashCode(), "hashes don't match 3");
 	check(vs.containsAll(vs4), "non-empty set contains empty set");
 	check(vs4.containsAll(vs5), "empty set contains other empty set");
 	check(vs.containsAll(vs) && vs.containsAll(vs3), "a set contains the same set");
@@ -422,11 +441,14 @@ M?	    check(vs.getValue(key) == values[i], "key " + key + " still has the right
 
 	vs5.addAll(vs4);
 	check(vs5.equals(vs4), "sets are the same after addAll");
+	check(vs5.hashCode() == vs4.hashCode(), "hashes are the same after addAll");
 
 	vs5.addAll(vs);
 	check(vs5.equals(vs), "sets are the same after addAll 2");
+	check(vs5.hashCode() == vs.hashCode(), "hashes are the same after addAll 2");
 
 	vs5.retainAll(vs4);
+	check(vs5.equals(vs4), "sets are the same after retainAll");
 	check(vs5.equals(vs4), "sets are the same after retainAll");
 
 	for (int i = 0; i < keys.length; ++i) {
