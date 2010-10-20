@@ -2,6 +2,7 @@
 *.jad
 *.class
 *.MANIFEST
+*.java
 *~
 .emacs.desktop
 preverified-classes
