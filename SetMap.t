@@ -333,12 +333,13 @@ IFMAP(<!dnl
 
     public int hashCode() {
 	int hash = 0;
-	for (int i = 0; i < count; ++i) {
-	    int ix = index[i];
-	    if (ix == -1)
-		continue;
-	    hash ^= (new XKEYTYPE (keys[ix])).hashCode ();
-	}
+	if (index != null)
+	    for (int i = 0; i < index.length; ++i) {
+		int ix = index[i];
+		if (ix == -1)
+		    continue;
+		hash ^= (new XKEYTYPE (keys[ix])).hashCode ();
+	    }
 	return hash;
     }
 
@@ -376,6 +377,8 @@ IFBASIC(<!dnl
 
     public static void main(String[] args) {
 	THISCLASS vs = new THISCLASS<!!>();
+
+	vs.hashCode ();
 
 	KEYTYPE[] keys = {2, 4, 50, 8, 9, 10, 15, 20};
 IFMAP(<!dnl
