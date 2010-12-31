@@ -339,7 +339,8 @@ IFMAP(<!dnl
 		if (ix == -1)
 		    continue;
 		hash ^= (new XKEYTYPE (keys[ix])).hashCode ();
-		hash = (hash << 1) | (hash >>> 31);
+		hash += 11;
+		hash = hash * 13;
 	    }
 	return hash;
     }
@@ -497,6 +498,37 @@ M?	    check(vs.getValue(key) == values[i], "key " + key + " still has the right
 		check(ds.size() == vs5.size(), "size of differenceOf set didn't change");
 	    check(!ds.containsKey(key), "differenceOf set doesn't contain ruled-out key");
 	}
+
+	// This tests for series of consecutive elements that produce
+	// colliding hashes.
+	IFSET(<!
+	ifelse(XKEYTYPE, <!Integer!>, <!
+	       class SeenHash {
+		   int hash;
+		   THISCLASS set;
+		   public SeenHash(THISCLASS set) {
+		       this.set = set;
+		       this.hash = set.hashCode();
+		   }
+	       };
+	       SeenHash[] hashes = new SeenHash[200];
+	       int ptr = 0;
+	       for (int j = 0; j < 20; ++j)
+		   for (int k = 0; k < j; ++k) {
+		       THISCLASS vs8 = new THISCLASS<!!>();
+		       for (int i = k; i < j; ++i)
+			   vs8.add (i);
+		       SeenHash sh = new SeenHash(vs8);
+		       for (int i = 0; i < ptr; ++i) {
+			   SeenHash sh2 = hashes[i];
+			   check (sh.hash != sh2.hash,
+				  "hash collision for " + sh.set + ", "
+				  + sh.hash + " already seen at " + sh2.set);
+		       }
+		       hashes[ptr++] = sh;
+		   }
+	       !>)
+	       !>)
 
 	if (failures == 0)
 	    System.out.println("All " + totalTests + " tests passed");
