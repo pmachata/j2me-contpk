@@ -339,6 +339,7 @@ IFMAP(<!dnl
 		if (ix == -1)
 		    continue;
 		hash ^= (new XKEYTYPE (keys[ix])).hashCode ();
+		hash = (hash << 1) | (hash >>> 31);
 	    }
 	return hash;
     }
